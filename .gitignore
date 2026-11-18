@@ -1,0 +1,7 @@
+sql-stage/*/.pgpass
+*.tsv
+scripts/.env
+
+__fiches__
+__queries__
+__spec__

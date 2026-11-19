@@ -10,12 +10,19 @@ Avec user normal en ayant crée avec ce même user `C:\Database\`
   -E UTF8 `
   --locale=French_France.1252 `
   -W
+# -U user dba 
+# -W demande interactive de mot de passe
 
-# edit postgresql.conf  => port 5452
-pg_ctl start -D "C:\Database\data-media"
+# edit postgresql.conf 
+#    => port 5452
+#    => wal_level = minimal   # pour import alllégé côté WAL 
+#    => max_wal_senders = 0   # pour import alllégé côté WAL
+pg_ctl start -D "C:\Database\data-media"   # + log
 pg_ctl stop -D "C:\Database\data-media"
 
 psql -U postgres -p 5452
+cd sql-init-dbmedia
+psql -U postgres -p 5452 -f 00-import-dbmedia.sql
 ```
 
 NB: en prod utiliser un user de service qui est propriétaire du répertoire data

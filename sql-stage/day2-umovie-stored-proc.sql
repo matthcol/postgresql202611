@@ -4,7 +4,7 @@
 --            quel que soit l'utilisateur qui declenche l'update/insert
 --            (alain, jacques, matth, ... via v_movie_latest ou autre)
 
-set search_path = cinema;
+set search_path = nsmovie;
 
 -- ============================================================
 -- 1) Nouvelles colonnes d'audit sur la table movie
@@ -30,7 +30,7 @@ create or replace function trg_movie_audit()
     returns trigger
     language plpgsql
     security definer
-    set search_path = cinema, pg_catalog, pg_temp
+    set search_path = nsmovie, pg_catalog, pg_temp
 as $$
 begin
     new.last_update := current_timestamp::timestamp; -- fonction standard SQL (= debut de transaction)
@@ -116,7 +116,7 @@ create or replace procedure add_movie(
     p_pg                 varchar  default null
 )
     language plpgsql
-    set search_path = cinema, pg_catalog, pg_temp
+    set search_path = nsmovie, pg_catalog, pg_temp
 as $$
 declare
     v_director_id int;

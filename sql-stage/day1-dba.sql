@@ -82,6 +82,19 @@ drop table meteo.weather;
 grant create on schema public to meteo;
 
 
+-- utiliser les tables métiers;
+-- database dbmovie
+select * from movie where year = 1994; -- ko
+show search_path;  -- """$user"", public"  => ne voit pas les tables du schema nsmovie
+
+-- soit utiliser un search_path provisoire
+set search_path = nsmovie;
+select * from movie where year = 1994;
+
+-- soit prefixer (pas d'ambiguité)
+select * from nsmovie.movie where year = 1994;
+
+
 
 
 

@@ -63,12 +63,15 @@ COMMIT;
 
 SELECT clock_timestamp() AS fin_import_data;
 
+\echo '--- realign sequences ---'
+\i 97-realign-seq.sql
+SELECT clock_timestamp() AS fin_realign_seq;
+
 \echo '--- keys ---'
 \i 98-keys.sql
 SELECT clock_timestamp() AS fin_keys;
 
 \echo '--- checkup ---'
 \i 99-checkup.sql
-
 
 SELECT clock_timestamp() AS fin_import;

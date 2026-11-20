@@ -1,7 +1,7 @@
 services:
       
   db:
-    image: postgres:${DB_VERSION:-18}
+    image: postgres:${DB_TAG:-18}
     restart: unless-stopped
     ports:
       - ${DB_PORT:-5432}:5432
@@ -13,7 +13,26 @@ services:
       POSTGRES_USER: ${DB_USER:-umovie}
     volumes:
       - ../sql-init-dbmovie:/docker-entrypoint-initdb.d
-      - ../sql-stage:/scripts
+      - ../../sql-stage:/scripts
+      - dbstorage:/var/lib/postgresql
+      - dbbackup:/backup
+
+  db2:
+    image: postgres:${DB_TAG:-18}
+    restart: unless-stopped
+    ports:
+      - ${DB_PORT2:-5433}:5432
+    environment:
+      POSTGRES_PASSWORD: ${DB_PASSWORD2:-password}
+      TZ: ${DB_TZ:-Europe/Paris}
+      PGTZ: ${DB_TZ:-Europe/Paris}
+      POSTGRES_DB: ${DB_NAME2:-dbmedia}
+      POSTGRES_USER: ${DB_USER2:-umedia}
+    volumes:
+      - ../sql-init-dbmedia:/docker-entrypoint-initdb.d
+      - ../../sql-stage:/scripts
+      - dbstorage2:/var/lib/postgresql
+      - dbbackup2:/backup
 
   gui:
     image: dpage/pgadmin4:${GUI_TAG:-9.18}
@@ -25,8 +44,14 @@ services:
       PGADMIN_DEFAULT_PASSWORD: ${GUI_PASSWORD:-password}
       PGPASS_FILE: /pgpass
     volumes:
-      - ../sql-stage:/var/lib/pgadmin/storage
+      - ../../sql-stage:/var/lib/pgadmin/storage
       - ./pgadmin/servers.json:/pgadmin4/servers.json:ro
       - ./pgadmin/pgpass:/pgpass:ro
+
+volumes:
+  dbstorage:
+  dbstorage2:
+  dbbackup:
+  dbbackup2:
 
 

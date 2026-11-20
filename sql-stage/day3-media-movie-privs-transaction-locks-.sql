@@ -1,32 +1,6 @@
-select * from pg_available_extensions order by name;
-
--- activer l'extension pg_trgm
-create extension pg_trgm;
-select * from pg_extension;
-
--- tracker les requetes
-create extension pg_stat_statements;
--- + postgresql.conf : shared_preload_libraries = 'pg_stat_statements'   
-
-
-show pg_stat_statements.track; -- all / top / none
-
--- Reset statistiques
-select pg_stat_statements_reset();
-select * from pg_stat_statements order by total_exec_time desc;
-
--- fin observation
-drop extension pg_stat_statements;
-
-
-
--- NB: pour un reset des compteurs de pg_stats
-pg_stat_reset(); -- → toute la base courante
-pg_stat_reset_single_table_counters(oid);  --
-
--- NB: Extension pgstattuple => Quantification du bloat réel
-CREATE EXTENSION IF NOT EXISTS pgstattuple;
-SELECT * FROM pgstattuple('nom_table'); 
+-- database dbmovie
+-- user postgres pour la supervision
+-- users umovie, fan, matth pour les requetes métiers
 
 
 -- supervisions sessions / users
@@ -94,6 +68,72 @@ select setval('nsmedia.media_id_seq', max(id)) from nsmedia.media;
 -- reload : postgresql.conf + pg_hba.conf
 -- OS : service, pg_ctl, pg_ctlcluster
 select pg_reload_conf();
+
+
+-- ***********************
+--     transactions
+-- ***********************
+
+-- par défaut chaque opération est atomique
+insert into media (title, release_year) values ('Dune: Part 3', 2026) returning id; -- 34111120
+select * from media where title = 'Dune: Part 3'; -- OK: pour cette session et les autres en //
+
+-- transaction explicite
+begin;  -- debut de transaction
+update media set duration_mn = 180 where id = 34111120;
+select * from media where title = 'Dune: Part 3'; -- cette transaction voit 180mn et les autres voient toujours NULL
+-- autres actions
+
+-- fin transaction : au choix
+commit; -- valide tout
+rollback;  -- annule tout
+
+
+
+-- isolation des transactions réglable
+
+
+-- verrous : lock et deadlock
+select * from media where id in (34111119, 34111120);
+
+-- session 1
+begin;  -- debut de transaction
+update media set duration_mn = 171 where id = 34111120;
+update media set duration_mn = 171 where id = 34111119;
+commit;
+rollback;
+
+-- session 2
+begin;  -- debut de transaction
+update media set duration_mn = 172 where id = 34111119;
+update media set duration_mn = 172 where id = 34111120;
+commit;
+-- rollback;
+
+-- supervision
+select * from pg_locks;
+select * from pg_stat_activity;
+
+select 
+	a.usename,
+	t.relname,
+	a.query,
+	l.*
+from 
+	pg_locks l
+	join pg_stat_activity a on l.pid = a.pid
+	join pg_class t on l.relation = t.oid
+where l.database > 0
+;
+
+
+
+
+
+
+
+
+
 
 
 

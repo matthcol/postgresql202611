@@ -1,7 +1,9 @@
 sql-stage/*/.pgpass
 *.tsv
-scripts/.env
+.env
 
 __fiches__
 __queries__
 __spec__
+
+backups/

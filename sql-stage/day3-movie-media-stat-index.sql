@@ -1,8 +1,11 @@
+-- user umovie base dbmovie
+-- (ou user umedia base dbmedia)
+
 -- occupation disque
 select * from pg_stat_user_tables;
 select * from pg_stat_user_indexes;  -- utilisation des indexes
-select * from pg_stats;
 
+-- détails et colonnes utiles
 select 
 	relname
 	-- activité base
@@ -20,6 +23,8 @@ select
 	last_autoanalyze
 from pg_stat_user_tables;
 
+
+-- statistiques sur les colonnes => choix des indexes
 select * 
 from pg_stats 
 where schemaname = 'nsmovie'
@@ -55,6 +60,50 @@ analyze movie;
 
 select * from movie where year = 1950;
 select * from movie where year between 1950 and 1959;
+
+
+-- NB : le paramétrage d'auto analyze se fait conjointement avec l'auto vacuum
+--  * Quelques paramètres:
+-- 		autovacuum_analyze_threshold
+-- 		autovacuum_analyze_scale_factor 
+-- 		default_statistics_target  => influe la taille de l'échantillonage
+--  * Paramétrage tunable dans postgresql.conf (général), au niveau d'une table ou d'une colonne
+
+
+
+
+select * from pg_available_extensions order by name;
+
+-- activer l'extension pg_trgm
+create extension pg_trgm;
+select * from pg_extension;
+
+-- tracker les requetes
+create extension pg_stat_statements;
+-- + postgresql.conf : shared_preload_libraries = 'pg_stat_statements'   
+
+
+show pg_stat_statements.track; -- all / top / none
+
+-- Reset statistiques
+select pg_stat_statements_reset();
+select * from pg_stat_statements order by total_exec_time desc;
+
+-- fin observation
+drop extension pg_stat_statements;
+
+
+
+-- NB: pour un reset des compteurs de pg_stats
+pg_stat_reset(); -- → toute la base courante
+pg_stat_reset_single_table_counters(oid);  --
+
+-- NB: Extension pgstattuple => Quantification du bloat réel
+CREATE EXTENSION IF NOT EXISTS pgstattuple;
+SELECT * FROM pgstattuple('nom_table'); 
+
+
+
 
 
 

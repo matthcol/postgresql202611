@@ -1,3 +1,6 @@
+-- base dbmedia
+-- exemples d'indexes
+
 create index idx_media_year_btree on media using btree(release_year);
 -- reorganiser la table physiquement
 cluster media using idx_media_year_btree;

@@ -11,5 +11,5 @@ alter user umedia set search_path to nsmedia, public;
 set session authorization umedia;
 set search_path = nsmedia;
 
-\i 01-tables.sql
-\i 02-data.sql
+\i sql-init-dbmedia/01-tables.sql
+\i sql-postinstall-dbmedia/02-data.sql

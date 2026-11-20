@@ -204,6 +204,26 @@ from movie
 where to_tsvector('english', title) @@ to_tsquery('english', 'war|peace');
 
 
+-- vaccum sur ses tables
+-- vacuum manuel
+vacuum nsmovie.movie;
+vacuum movie;
+
+delete from play where actor_id % 2 = 1;  -- DELETE 32770
+vacuum play;
+vacuum full play;
+
+-- index seul
+reindex index CONCURRENTLY idx_person_name;
+reindex table CONCURRENTLY person;
+
+-- rafraichir les stats : auto ou manuel
+analyze movie;
+vacuum analyze movie;
+
+
+
+
 
 
 

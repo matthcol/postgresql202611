@@ -18,11 +18,14 @@ Avec user normal en ayant crée avec ce même user `C:\Database\`
 #    => wal_level = minimal   # pour import alllégé côté WAL 
 #    => max_wal_senders = 0   # pour import alllégé côté WAL
 pg_ctl start -D "C:\Database\data-media"   # + log
-pg_ctl stop -D "C:\Database\data-media"
+#pg_ctl stop -D "C:\Database\data-media"
 
-psql -U postgres -p 5452
 cd sql-init-dbmedia
+psql -U postgres -p 5452  # test connexion
 psql -U postgres -p 5452 -f 00-import-dbmedia.sql
+
+# check again
+psql -U umedia -d dbmedia -p 5452 -f 99-checkup.sq!l
 ```
 
 NB: en prod utiliser un user de service qui est propriétaire du répertoire data

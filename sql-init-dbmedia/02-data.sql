@@ -68,7 +68,7 @@ SELECT clock_timestamp() AS fin_import_data;
 SELECT clock_timestamp() AS fin_keys;
 
 \echo '--- checkup ---'
-\i 98-checkup.sql
+\i 99-checkup.sql
 
 
 SELECT clock_timestamp() AS fin_import;
